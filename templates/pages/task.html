@@ -1,0 +1,18 @@
+{% extends "layouts/base_layout.html" %}
+
+{% block main %}
+<div class="container">
+    <div class="row">
+        <div class="card" id="this_card" style="width: 18rem;">
+            <div class="card-body">
+            <h5 class="card-title"> {{ task.title }} </h5>
+            <textarea class="card-text" id="newDesc"> {{ task.description }} </textarea>
+            <br>
+            <button onclick="changeTask({{task.id}})" class="btn btn-primary"> Изменить </button>
+            <a href="/tasks" class="card-link btn btn-primary">Назад</a>
+            </div>
+            <button id="comment" onclick="getComment({{task.id}})" class="btn btn-primary"> Комментировать </button>
+        </div>
+</div>
+</div>
+{% endblock %}
