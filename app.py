@@ -1,6 +1,8 @@
-from flask import Flask, session, render_template, redirect, request, url_for
+from flask import Flask, session, render_template, redirect, request, url_for, jsonify, Response
 from entities import User, Task
 from storage import Storage
+from flask_cors import cross_origin
+import json
 
 # Создаём приложение
 app = Flask(__name__)
@@ -141,6 +143,15 @@ def delete_task(taskId):
 def render_task(taskId):
     if "user_id" not in session:
         return redirect('/login');
+
+    if not Storage.task_exists(taskId):
+        text = 'Такой задачи не существует в базе данных :('
+        return render_template('pages/error.html', text=text)
+
+    if not Storage.is_permitted(session["user_id"], taskId):
+        text = 'Ошибка. Чужая задача :('
+        return render_template('pages/error.html', text=text)
+
     task = Storage.get_task(taskId);
     return render_template('pages/task.html', task=task);
 
@@ -158,6 +169,16 @@ def update_desc(taskId):
         return redirect('/login')
     Storage.update_desc(taskId, str(request.data)[2:-1])
     return 'ok'
+
+# Фильтры
+@app.route('/filters', methods=['PUT'])
+@cross_origin(headers=['Content-Type'])
+def filter():
+    if "user_id" not in session:
+        return redirect('/login')
+    json_data = request.json
+    tasks = Storage.filter(json_data['state'], session["user_id"])
+    return Response(json.dumps(tasks), mimetype='application/json')
 
 if __name__ == '__main__':
     app.env = 'development'

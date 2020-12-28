@@ -36,3 +36,8 @@
 p{
     background: #e6ebf0;
 }
+
+.flex-wrapper {
+    display: flex;
+    align-items: center;
+}

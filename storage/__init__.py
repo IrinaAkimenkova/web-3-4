@@ -82,3 +82,42 @@ class Storage:
     def update_desc(taskId: int, new_desc: str):
         db.execute('UPDATE tasks SET description = ? WHERE id = ?', (new_desc, taskId));
         db.commit();
+
+    @staticmethod
+    def task_exists(taskId: int):
+        count = db.execute('SELECT COUNT(*) FROM tasks WHERE id = ?', (taskId,)).fetchone()
+        if count[0] > 0:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_permitted(id_user: int, taskId: int):
+        task_owner_id = db.execute('SELECT id_user FROM tasks WHERE id = ?', (taskId,)).fetchone()
+        if task_owner_id[0] == id_user:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def filter(state: str, id_user: int):
+        is_done_l = 0
+        is_done_r = 1
+
+        if state == 'done':
+            is_done_l = 1
+        if state == 'in_progress':
+            is_done_r = 0
+
+        request = db.execute('SELECT * FROM tasks WHERE (is_done = ? OR is_done = ?) AND id_user = ? ORDER BY id ASC', (is_done_l, is_done_r, id_user));
+        tasks = request.fetchall();
+        tasksList = [];
+        for task in tasks:
+            tasksList.append({
+                'id': task[0],
+                'title': task[1],
+                'description': task[2],
+                'user_id': task[3],
+                'state': task[4]
+            });
+        return tasksList;
