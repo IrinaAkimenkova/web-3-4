@@ -40,7 +40,6 @@ const getComment = (id) => {
 const changeTask = (id) => {
     const url = '/tasks/desc/' + id;
     const newDesc = document.getElementById("newDesc")
-    console.log(newDesc.value)
     fetch(url, {
         method: 'PUT',
         body: newDesc.value
@@ -50,6 +49,8 @@ const changeTask = (id) => {
 const filter = () => {
     const filters = document.getElementById('filters')
     const selectedState = filters.options[filters.selectedIndex].value
+    const filterTitle = document.getElementById('filterTitle')
+    const selectedTitle = filterTitle.value
     const url = '/filters'
     fetch(url, {
         method: 'PUT',
@@ -57,7 +58,8 @@ const filter = () => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            state: selectedState
+            state: selectedState,
+            title: selectedTitle
         })
     })
     .then(response => response.json())
@@ -67,7 +69,6 @@ const filter = () => {
 const renderTasks = (tasksData) => {
     const tasks = document.getElementById("tasks")
     tasks.innerHTML = ''
-    console.log(tasksData)
     for (let i = 0; i < tasksData.length; i++) {
         const card = document.createElement('div');
         card.classList.add('card', 'mb-4')
@@ -83,9 +84,7 @@ const renderTasks = (tasksData) => {
         cardState.setAttribute('onclick', 'setState(' + tasksData[i].id + ')')
         if (tasksData[i].state === 1)
             cardState.setAttribute('checked','checked')
-
-        console.log(tasksData[i].state)
-        console.log(cardState.checked)
+        cardState.style.marginRight = '3px'
 
         cardHeader.appendChild(cardState)
         cardHeader.innerHTML += tasksData[i].title
@@ -106,6 +105,7 @@ const renderTasks = (tasksData) => {
         deleteButton.innerText = 'Удалить'
         deleteButton.classList.add('btn', 'btn-primary')
         deleteButton.setAttribute('onclick', 'deleteTask(' + tasksData[i].id + ')')
+        deleteButton.style.marginLeft = '3px'
 
         cardBody.append(taskDesc, openButton, deleteButton)
         card.appendChild(cardBody)

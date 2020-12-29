@@ -100,7 +100,7 @@ class Storage:
             return False
 
     @staticmethod
-    def filter(state: str, id_user: int):
+    def filter(state: str, title: str, id_user: int):
         is_done_l = 0
         is_done_r = 1
 
@@ -109,7 +109,7 @@ class Storage:
         if state == 'in_progress':
             is_done_r = 0
 
-        request = db.execute('SELECT * FROM tasks WHERE (is_done = ? OR is_done = ?) AND id_user = ? ORDER BY id ASC', (is_done_l, is_done_r, id_user));
+        request = db.execute('SELECT * FROM tasks WHERE (is_done = ? OR is_done = ?) AND id_user = ? AND title LIKE ? ORDER BY id ASC', (is_done_l, is_done_r, id_user, '%' + title + '%'));
         tasks = request.fetchall();
         tasksList = [];
         for task in tasks:

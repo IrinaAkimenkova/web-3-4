@@ -177,7 +177,7 @@ def filter():
     if "user_id" not in session:
         return redirect('/login')
     json_data = request.json
-    tasks = Storage.filter(json_data['state'], session["user_id"])
+    tasks = Storage.filter(json_data['state'], json_data['title'], session["user_id"])
     return Response(json.dumps(tasks), mimetype='application/json')
 
 if __name__ == '__main__':
